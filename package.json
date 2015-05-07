@@ -1,0 +1,32 @@
+{
+  "name": "MyHonors",
+  "version": "1.0.0",
+  "description": "MyHonors is the premiere online portal for FIU Honors College students, staff, clubs and professors.",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fiuhonors/myhonors"
+  },
+  "keywords": [
+    "fiu",
+    "myhonors",
+    "honors",
+    "students",
+    "professors",
+    "clubs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fiuhonors/myhonors/issues"
+  },
+  "homepage": "https://github.com/fiuhonors/myhonors",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-plumber": "^1.0.0",
+    "gulp-sass": "^2.0.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.2.0"
+  }
+}

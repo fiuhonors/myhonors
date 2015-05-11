@@ -1,4 +1,4 @@
-/*global require */
+/*global require, process, console */
 (function () {
     'use strict';
 	
@@ -9,10 +9,11 @@
         sourcemaps = require('gulp-sourcemaps'),
         concat = require('gulp-concat'),
         uglify = require('gulp-uglify'),
-		console = window.console;
+		rimraf = require('rimraf'),
+		karma = require('karma').server;
     
     // Convert SCSS to CSS files
-    gulp.task('sass', function () {
+	function scssToCSS() {
         var sassSettings = {
                 outputStyle: 'compressed',
                 errLogToConsole: true
@@ -30,10 +31,10 @@
             .pipe(sourcemaps.write())
             .pipe(plumber.stop())
             .pipe(gulp.dest('./styles'));
-    });
-    
-    // JSX Transpile, Uglify and Concatenate Javascript files
-    gulp.task('js', function () {
+    }
+	
+	// Uglify and Concatenate Javascript files
+	function jsUglifyAndMinify() {
 		var plumberSettings = {
 			errorHandler: function (error) {
 				console.log("JS Error: " + error);
@@ -51,13 +52,54 @@
             .pipe(uglify())
 			.pipe(plumber.stop())
             .pipe(gulp.dest('./scripts/'));
-    });
+    }
+	
+	// Test Javascript files locally
+	function jsTestLocal(callback) {
+		karma.start({
+			configFile: __dirname + '/tests/karma.conf.js'
+		}, function (exitCode) {
+			if (callback) {
+				callback(exitCode);
+			} else {
+				process.exit(exitCode);
+			}
+		});
+	}
+	
+	// Test Javascript files in CI - upload coverage of tests to Coveralls
+	function jsTestCI() {
+		karma.start({
+			configFile: __dirname + '/tests/karma.conf.js',
+			singleRun: true,
+			browsers: ['PhantomJS'],
+			reporters: ['progress', 'coverage', 'coveralls'],
+			preprocessors: {
+				'**/*.js': ['coverage']
+			},
+			coverageReporter: {
+				type: 'lcov',
+				dir: 'tests/coverage/'
+			}
+		}, function (exitCode) {
+			rimraf('./tests/coverage', function () {
+				process.exit(exitCode);
+			});
+		});
+	}
+	
+    gulp.task('sass', scssToCSS);
+    gulp.task('jsMin', jsUglifyAndMinify);
+	gulp.task('jsTestLocal', jsTestLocal);
+	gulp.task('jsTestCI', jsTestCI);
     
-    gulp.task('watch', function () {
+    gulp.task('dev', function () {
+		jsTestLocal();
         gulp.watch('./styles/scss/**/*.scss', ['sass']);
-        gulp.watch('./app/**/*.js', ['js']);
+        gulp.watch('./app/**/*.js', ['jsMin']);
     });
     
-    gulp.task('default', ['watch']);
-    
+    gulp.task('default', ['dev']);
+    gulp.task('ci', ['jsTestCI']);
+	
 }());

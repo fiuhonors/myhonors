@@ -4,4 +4,6 @@ node_js:
 before_script:
 - npm install
 - npm install -g bower
+- npm install -g gulp
 - bower install
+- gulp ci

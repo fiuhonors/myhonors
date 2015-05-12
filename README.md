@@ -10,7 +10,7 @@ MyHonors (Web) is a fast, highly performant and beautiful web platform that conn
 2. `npm install` to install all of our development dependencies.
 3. `npm install bower -g` to install Bower globally (if you have not)
 3. `bower install` to install all of our front-end dependencies.
-4. `gulp` to run gulp, our task runner that automates things like SASS to CSS compilation, JS minification and uglifying, JSX and/or Typescript to JS compilation.ss
+4. `gulp` to run gulp, our task runner that automates things like SASS to CSS compilation, JS minification and uglifying, JSX and/or Typescript to JS compilation.
 
 ## Technology
 MyHonors uses a myriad of web technologies. Some frameworks, tools, and libraries that are used are:

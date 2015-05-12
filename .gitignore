@@ -2,3 +2,4 @@
 /bower_components/*
 /app/config.js
 /tests/coverage/*
+/scripts/app.min.js

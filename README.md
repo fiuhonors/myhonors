@@ -6,7 +6,7 @@ MyHonors (Web) is a fast, highly performant and beautiful web platform that conn
 
 ## Starting Development
 
-1. Setup the appropriate configuration settings (keys, reference URLs, etc.) at `app/config.js`.
+1. Setup the appropriate configuration settings (keys, reference URLs, etc.) at `app/.config.js`.
 2. `npm install` to install all of our development dependencies.
 3. `npm install bower -g` to install Bower globally (if you have not)
 3. `bower install` to install all of our front-end dependencies.

@@ -13,9 +13,14 @@ module.exports = function (config) {
 			'bower_components/firebase/firebase.js',
 			'bower_components/mockfirebase/browser/mockfirebase.js',
 			'bower_components/angular-mocks/angular-mocks.js',
-			'app/**/config.js',
+			'app/.config.js',
+			'app/app.module.js',
+			'app/app.config.js',
+			'app/app.run.js',
 			'app/**/module.js',
-			'app/**/!(module,config).js',
+			'app/**/config.js',
+			'app/**/run.js',
+			'app/**/!(module|config|run|.config).js',
 			'tests/unit/**/*.spec.js'
 		],
 		reporters: ['progress']

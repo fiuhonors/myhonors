@@ -42,9 +42,14 @@
 		};
         
         return gulp.src([
-			'./app/**/config.js',
+			'./app/.config.js',
+			'./app/app.module.js',
+			'./app/app.config.js',
+			'./app/app.run.js',
 			'./app/**/module.js',
-			'./app/**/!(module,config)*.js'
+			'./app/**/config.js',
+			'./app/**/run.js',
+			'./app/**/!(module|config|run|.config).js'
 		])
 			.pipe(plumber(plumberSettings))
             .pipe(concat('app.min.js'))
@@ -96,7 +101,7 @@
     gulp.task('dev', function () {
 		jsTestLocal();
         gulp.watch('./styles/scss/**/*.scss', ['sass']);
-        gulp.watch('./app/**/*.js', ['jsMin']);
+        gulp.watch(['./app/**/*.js', './app/.config.js'], ['jsMin']);
     });
     
     gulp.task('default', ['dev']);

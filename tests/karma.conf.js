@@ -8,6 +8,7 @@ module.exports = function (config) {
 		frameworks: ['jasmine'],
 		singleRun: false,
 		files: [
+			'node_modules/jasmine-expect/dist/jasmine-matchers.js',
 			'bower_components/angular/angular.js',
 			'bower_components/angular-ui-router/release/angular-ui-router.min.js',
 			'bower_components/firebase/firebase.js',

@@ -1,5 +1,5 @@
 /node_modules/*
 /bower_components/*
-/app/config.js
+/app/.config.js
 /tests/coverage/*
 /scripts/app.min.js

@@ -9,7 +9,7 @@
 								   'myhonorsApp.datastore',
 								   'myhonorsApp.clubs',
 								   'myhonorsApp.events',
-								   'myhonorsApp.volunteerActivities',
+								   'myhonorsApp.citizenships',
 								   'myhonorsApp.careers']);
 	
 	

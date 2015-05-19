@@ -3,6 +3,6 @@
 	
 	var angular = window.angular;
 	
-	angular.module('myhonorsApp.citizenships', []);
+	angular.module('myhonorsApp.users', ['ui.router']);
 	
 }(window));

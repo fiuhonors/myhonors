@@ -46,10 +46,10 @@
 			'./app/app.module.js',
 			'./app/app.config.js',
 			'./app/app.run.js',
-			'./app/**/module.js',
-			'./app/**/config.js',
-			'./app/**/run.js',
-			'./app/**/!(module|config|run|.config).js'
+			'./app/**/*.module.js',
+			'./app/**/*.config.js',
+			'./app/**/*.run.js',
+			'./app/**/!(*.module|*.config|*.run|.config).js'
 		])
 			.pipe(plumber(plumberSettings))
             .pipe(concat('app.min.js'))

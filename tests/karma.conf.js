@@ -18,11 +18,12 @@ module.exports = function (config) {
 			'app/app.module.js',
 			'app/app.config.js',
 			'app/app.run.js',
-			'app/**/module.js',
-			'app/**/config.js',
-			'app/**/run.js',
-			'app/**/!(module|config|run|.config).js',
-			'tests/unit/**/*.spec.js'
+			'app/**/*.module.js',
+			'app/**/*.config.js',
+			'app/**/*.run.js',
+			'app/**/!(*.module|*.config|*.run|.config).js',
+			'tests/unit/**/helpers.spec.js',
+			'tests/unit/**/!(helpers).spec.js'
 		],
 		reporters: ['progress']
 	});

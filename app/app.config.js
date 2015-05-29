@@ -4,7 +4,7 @@
 	var angular = window.angular,
 		app = angular.module('myhonorsApp');
 	
-	function config($stateProvider) {
+	function config($stateProvider, $compileProvider) {
 		
 		$stateProvider
 			.state('app', {
@@ -14,8 +14,12 @@
 				templateUrl: 'app/app.partial.html'
 			});
 		
+		// Turn off at production!
+		$compileProvider.debugInfoEnabled(true);
+		
 	}
-	config.$inject = ['$stateProvider'];
+	config.$inject = ['$stateProvider',
+					  '$compileProvider'];
 	
 	app.config(config);
 	

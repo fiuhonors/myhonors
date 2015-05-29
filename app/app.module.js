@@ -6,7 +6,7 @@
 	angular.module('myhonorsApp', ['ui.router',
 								   'myhonorsApp.auth',
 								   'myhonorsApp.users',
-								   'myhonorsApp.datastore',
+								   'myhonorsApp.storage',
 								   'myhonorsApp.clubs',
 								   'myhonorsApp.events',
 								   'myhonorsApp.citizenships',

@@ -3,6 +3,6 @@
 	
 	var angular = window.angular;
 	
-	angular.module('myhonorsApp.datastore', []);
+	angular.module('myhonorsApp.storage', []);
 	
 }(window));

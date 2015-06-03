@@ -10,7 +10,8 @@
         concat = require('gulp-concat'),
         uglify = require('gulp-uglify'),
 		rimraf = require('rimraf'),
-		karma = require('karma').server;
+		karma = require('karma').server,
+		yargv = require('yargs').argv;
     
     // Convert SCSS to CSS files
 	function scssToCSS() {
@@ -61,9 +62,14 @@
 	
 	// Test Javascript files locally
 	function jsTestLocal(callback) {
-		karma.start({
-			configFile: __dirname + '/tests/karma.conf.js'
-		}, function (exitCode) {
+		var karmaConfig = {
+				configFile: __dirname + '/tests/karma.conf.js'
+			};
+		if (!yargv.full && !yargv.f) {
+			karmaConfig.exclude = ['tests/unit/**/*.module.spec.js', 
+								   'tests/unit/**/*.config.spec.js'];
+		}
+		karma.start(karmaConfig, function (exitCode) {
 			if (callback) {
 				callback(exitCode);
 			} else {

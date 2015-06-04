@@ -15,8 +15,6 @@ module.exports = function (config) {
 			'bower_components/mockfirebase/browser/mockfirebase.js',
 			'bower_components/angular-mocks/angular-mocks.js',
 			'bower_components/firebase-util/dist/firebase-util.min.js',
-			'tests/unit/**/helpers.spec.js',
-			'tests/unit/**/!(helpers).spec.js',
 			'app/.config.js',
 			'app/app.module.js',
 			'app/app.config.js',
@@ -24,7 +22,9 @@ module.exports = function (config) {
 			'app/**/*.module.js',
 			'app/**/*.config.js',
 			'app/**/*.run.js',
-			'app/**/!(*.module|*.config|*.run|.config).js'
+			'app/**/!(*.module|*.config|*.run|.config).js',
+			'tests/unit/**/helpers.spec.js',
+			'tests/unit/**/!(helpers).spec.js'
 		],
 		reporters: ['progress']
 	});

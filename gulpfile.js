@@ -13,7 +13,8 @@
 		karma = require('karma').server,
 		yargv = require('yargs').argv,
 		jshint = require('gulp-jshint'),
-		jshintStylish = require('jshint-stylish');
+		jshintStylish = require('jshint-stylish'),
+		watch = require('gulp-watch');
     
     // Convert SCSS to CSS files
 	function scssToCSS() {
@@ -82,6 +83,8 @@
 	
 	// JSHint to make sure code follows .jshintrc rules
 	function jshintCheck() {
+		console.log('<------------- Js Hint ---------------------->');
+		
 		return gulp.src([
 			'./app/**/*.js',
 			'./scripts/**/!(*.min).js'
@@ -115,16 +118,16 @@
 	
     gulp.task('sass', scssToCSS);
 	gulp.task('sassWatch', function () {
-		gulp.task('./styles/scss/**/*.scss', ['sass']);
+		watch('./styles/scss/**/*.scss', scssToCSS);
 	});
     gulp.task('jsMin', jsUglifyAndMinify);
 	gulp.task('jsMinWatch', function () {
-		gulp.watch(['./app/**/*.js', './app/.config.js'], ['jsMin']);
+		watch(['./app/**/*.js', './app/.config.js'], jsUglifyAndMinify);
 	});
 	gulp.task('jsTestLocal', jsTestLocal);
 	gulp.task('jshint', jshintCheck);
 	gulp.task('jshintWatch', function () {
-		gulp.watch(['./app/**/*.js', './scripts/**/!(*.min).js'], ['jshint']);
+		watch(['./app/**/*.js', './scripts/**/!(*.min).js'], jshintCheck);
 	});
     gulp.task('dev', ['sassWatch', 'jsMinWatch', 'jshintWatch'], function () {
 		jsTestLocal();

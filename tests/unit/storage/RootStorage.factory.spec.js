@@ -6,13 +6,13 @@
 		MockFirebase = window.MockFirebase,
 		jasmine = window.jasmine;
 	
-	describe('Storage Access Factory:', function () {
+	describe('RootStorage Factory:', function () {
 		
-		var StorageAccess,
+		var RootStorage,
 			$timeout;
 		
 		function flushAll() {
-			StorageAccess.$$storageRef.flush();
+			RootStorage.$$storageRef.flush();
 			try {
 				$timeout.flush();
 			} catch (e) {}
@@ -20,21 +20,21 @@
 		
 		beforeEach(function () {
 			angular.mock.module('myhonorsApp.storage', function ($provide) {
-				$provide.value("StorageService", {
+				$provide.value("StorageReferenceService", {
 					getRef: function () {
 						return new MockFirebase("http://test.firebaseio.com");
 					}
 				});
 			});
-			angular.mock.inject(function (_StorageAccessService_, _$timeout_) {
-				StorageAccess = _StorageAccessService_;
+			angular.mock.inject(function (_RootStorageService_, _$timeout_) {
+				RootStorage = _RootStorageService_;
 				$timeout = _$timeout_;
 			});
 		});
 		
 		it('should have correct preliminary Firebase reference', function () {
-			expect(StorageAccess.$$storageRef).toBeTruthy();
-			expect(StorageAccess.$$storageRef)
+			expect(RootStorage.$$storageRef).toBeTruthy();
+			expect(RootStorage.$$storageRef)
 				.toEqual(jasmine.any(MockFirebase));
 		});
 		
@@ -47,9 +47,9 @@
 							anotherTestProp: "someAnotherValue"	
 						}
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
-				StorageAccess.set(testModel).then(function () {
+				RootStorage.set(testModel).then(function () {
 					expect(storageRef.getData()).toEqual(testModel);
 					done();
 				}, function () {
@@ -62,9 +62,9 @@
 				var testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath");
+					storageRef = RootStorage.$$storageRef.child("childPath");
 				
-				StorageAccess.set(testModel, "childPath").then(function () {
+				RootStorage.set(testModel, "childPath").then(function () {
 					expect(storageRef.getData()).toEqual(testModel);
 					done();
 				}, function () {
@@ -80,12 +80,12 @@
 					testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				
-				StorageAccess.set(testModel).then(function () {
+				RootStorage.set(testModel).then(function () {
 					expect(storageRef.getData()).toEqual(testModel);
 					done();
 				}, function () {
@@ -102,9 +102,9 @@
 				var testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
-				StorageAccess.update(testModel).then(function () {
+				RootStorage.update(testModel).then(function () {
 					expect(storageRef.getData()).toEqual(testModel);
 					done();
 				}, function () {
@@ -117,9 +117,9 @@
 				var testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath");
+					storageRef = RootStorage.$$storageRef.child("childPath");
 				
-				StorageAccess.update(testModel, "childPath").then(function () {
+				RootStorage.update(testModel, "childPath").then(function () {
 					expect(storageRef.getData()).toEqual(testModel);
 					done();
 				}, function () {
@@ -135,12 +135,12 @@
 					testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				
-				StorageAccess.update(testModel).then(function () {
+				RootStorage.update(testModel).then(function () {
 					var combinedData = {};
 					angular.extend(combinedData, preliminaryData);
 					angular.extend(combinedData, testModel);
@@ -161,9 +161,9 @@
 				var testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
-				StorageAccess.push(testModel).then(function () {
+				RootStorage.push(testModel).then(function () {
 					expect(storageRef.getData()).not.toEqual(testModel);
 					expect(storageRef.getData()).toBeNonEmptyObject();
 					done();
@@ -177,9 +177,9 @@
 				var testModel = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath");
+					storageRef = RootStorage.$$storageRef.child("childPath");
 				
-				StorageAccess.push(testModel, "childPath").then(function () {
+				RootStorage.push(testModel, "childPath").then(function () {
 					expect(storageRef.getData()).not.toEqual(testModel);
 					expect(storageRef.getData()).toBeNonEmptyObject();
 					done();
@@ -197,12 +197,12 @@
 				var preliminaryData = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				
-				StorageAccess.get().then(function (data) {
+				RootStorage.get().then(function (data) {
 					expect(data).toEqual(storageRef.getData());
 					done();
 				}, function () {
@@ -215,12 +215,12 @@
 				var preliminaryData = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath");
+					storageRef = RootStorage.$$storageRef.child("childPath");
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				
-				StorageAccess.get("childPath").then(function (data) {
+				RootStorage.get("childPath").then(function (data) {
 					expect(data).toEqual(storageRef.getData());
 					done();
 				}, function () {
@@ -240,14 +240,14 @@
 					secondaryData = {
 						newTestProp: "someOtherValue"	
 					},
-					storageRef = StorageAccess.$$storageRef,
+					storageRef = RootStorage.$$storageRef,
 					fireCount = 0;
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				
-				// Storage Access should be fired twice - 2 set operations
-				StorageAccess.listen(function (data) {
+				// Root Storage should be fired twice - 2 set operations
+				RootStorage.listen(function (data) {
 					fireCount++;
 					expect(data).toEqual(storageRef.getData());
 					if (fireCount === 2) {
@@ -267,14 +267,14 @@
 					secondaryData = {
 						newTestProp: "someOtherValue"	
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath"),
+					storageRef = RootStorage.$$storageRef.child("childPath"),
 					fireCount = 0;
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				
-				// Storage Access should be fired twice - 2 set operations
-				StorageAccess.listen(function (data) {
+				// Root Storage should be fired twice - 2 set operations
+				RootStorage.listen(function (data) {
 					fireCount++;
 					expect(data).toEqual(storageRef.getData());
 					if (fireCount === 2) {
@@ -290,19 +290,19 @@
 			
 			it('should throw if a non-function is given', function () {
 				var stringCallback = function () {
-						StorageAccess.listen('callback');
+						RootStorage.listen('callback');
 					}, 
 					objectCallback = function () {
-						StorageAccess.listen({});	
+						RootStorage.listen({});	
 					},
 					arrayCallback = function () {
-						StorageAccess.listen([]);	
+						RootStorage.listen([]);	
 					},
 					booleanCallback = function () {
-						StorageAccess.listen(true);	
+						RootStorage.listen(true);	
 					},
 					numberCallback = function () {
-						StorageAccess.listen(1);	
+						RootStorage.listen(1);	
 					};
 				
 				expect(stringCallback).toThrowError();
@@ -319,10 +319,10 @@
 					secondaryData = {
 						newTestProp: "someOtherValue"
 					},
-					storageRef = StorageAccess.$$storageRef,
+					storageRef = RootStorage.$$storageRef,
 					fireCount = 0;
 				
-				var unwatch = StorageAccess.listen(function () {
+				var unwatch = RootStorage.listen(function () {
 						fireCount++;
 					});
 				
@@ -352,17 +352,17 @@
 					secondaryData = {
 						newTestProp: "someOtherValue"	
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath"),
+					storageRef = RootStorage.$$storageRef.child("childPath"),
 					fireCount1 = 0,
 					fireCount2 = 0;
 				
-				// This StorageAccess listener should be fired 2 times
+				// This RootStorage listener should be fired 2 times
 				// initial load + 1 set operation
 				// second set operation ignored because of delisten()
-				StorageAccess.listen(function () {
+				RootStorage.listen(function () {
 					fireCount1++;
 					if (fireCount1 === 2) {
-						StorageAccess.delisten("childPath");
+						RootStorage.delisten("childPath");
 						
 						// This should be ignored because of delisten()
 						storageRef.set(secondaryData);
@@ -374,13 +374,13 @@
 					}
 				}, "childPath");
 				
-				// This StorageAccess listener should be fired 3 times
+				// This RootStorage listener should be fired 3 times
 				// initial load + 2 set operations
 				// 4th set operation ignored because of delisten()
-				StorageAccess.listen(function () {
+				RootStorage.listen(function () {
 					fireCount2++;
 					if (fireCount2 === 3) {
-						StorageAccess.delisten();
+						RootStorage.delisten();
 						
 						// This should be ignored because of delisten()
 						storageRef.set(secondaryData);
@@ -397,19 +397,19 @@
 			
 			it('should throw if a non-function is given', function () {
 				var stringCallback = function () {
-						StorageAccess.listen('callback');
+						RootStorage.listen('callback');
 					}, 
 					objectCallback = function () {
-						StorageAccess.listen({});	
+						RootStorage.listen({});	
 					},
 					arrayCallback = function () {
-						StorageAccess.listen([]);	
+						RootStorage.listen([]);	
 					},
 					booleanCallback = function () {
-						StorageAccess.listen(true);	
+						RootStorage.listen(true);	
 					},
 					numberCallback = function () {
-						StorageAccess.listen(1);	
+						RootStorage.listen(1);	
 					};
 				
 				expect(stringCallback).toThrowError();
@@ -427,13 +427,13 @@
 				var preliminaryData = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef;
+					storageRef = RootStorage.$$storageRef;
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				expect(storageRef.getData()).toBeTruthy();
 				
-				StorageAccess.remove().then(function () {
+				RootStorage.remove().then(function () {
 					expect(storageRef.getData()).toBeFalsy();
 					done();
 				});
@@ -444,13 +444,13 @@
 				var preliminaryData = {
 						testProp: "someValue"
 					},
-					storageRef = StorageAccess.$$storageRef.child("childPath");
+					storageRef = RootStorage.$$storageRef.child("childPath");
 				
 				storageRef.set(preliminaryData);
 				flushAll();
 				expect(storageRef.getData()).toBeTruthy();
 				
-				StorageAccess.remove().then(function () {
+				RootStorage.remove().then(function () {
 					expect(storageRef.getData()).toBeFalsy();
 					done();
 				});

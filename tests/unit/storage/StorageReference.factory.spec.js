@@ -8,19 +8,19 @@
 	
 	describe('Storage Factory:', function () {
 		
-		var Storage;
+		var StorageReferenceService;
 		
 		beforeEach(function () {
 			if (window.SETTINGS) {
 				delete window.SETTINGS;	
 			}
 			angular.mock.module('myhonorsApp.storage');
-			angular.mock.inject(function (_StorageService_) {
-				Storage = _StorageService_;
+			angular.mock.inject(function (_StorageReferenceService_) {
+				StorageReferenceService = _StorageReferenceService_;
 			});
 		});
 		
-		it('should return reference given correct config', function () {
+		it('should return storage reference given config', function () {
 			window.SETTINGS = {
 				STORAGE: {
 					FIREBASE: {
@@ -28,14 +28,14 @@
 					}
 				}
 			};
-			var reference = Storage.getRef();
+			var reference = StorageReferenceService.getRef();
 			
 			expect(reference).toEqual(jasmine.any(Firebase));
 		});
 		
 		it('should throw error if no app settings', function () {
 			var appSettingsMissing = function () {
-				Storage.getRef();
+				StorageReferenceService.getRef();
 			};
 			expect(appSettingsMissing).toThrowError("App settings" + 
 				" must be set in .config.js");
@@ -46,14 +46,12 @@
 			};
 			
 			var storageSettingsMissing = function () {
-				Storage.getRef();
+				StorageReferenceService.getRef();
 			};
 			expect(storageSettingsMissing).toThrowError("Storage/Database" + 
 				" settings must be set in .config.js");
 		});
 		
-		
-		
 	});
 	
-}(window))
+}(window));

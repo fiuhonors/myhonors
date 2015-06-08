@@ -6,14 +6,14 @@
 	
 	angular
 		.module('myhonorsApp.storage')
-		.factory('StorageService', StorageService);
+		.factory('StorageReferenceService', StorageReferenceService);
 	
 	/**
 	* @ngdoc service
-	* @name myhonorsApp.storage.service:Storage
+	* @name myhonorsApp.storage.service:StorageReferenceService
 	* @description Handles creating references to storage/persistence layer
 	*/
-	function StorageService() {
+	function StorageReferenceService() {
 		
 		return {
 			getRef: getRef	
@@ -22,7 +22,7 @@
 		/**
 		* @ngdoc method
 		* @name getRef
-		* @methodOf myhonorsApp.storage.Storage
+		* @methodOf myhonorsApp.storage.StorageReferenceService
 		* @description Constructs the proper absolute reference to
 		*	the database/storage service of the app.
 		*

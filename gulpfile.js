@@ -11,7 +11,9 @@
         uglify = require('gulp-uglify'),
 		rimraf = require('rimraf'),
 		karma = require('karma').server,
-		yargv = require('yargs').argv;
+		yargv = require('yargs').argv,
+		jshint = require('gulp-jshint'),
+		jshintStylish = require('jshint-stylish');
     
     // Convert SCSS to CSS files
 	function scssToCSS() {
@@ -99,15 +101,27 @@
 		});
 	}
 	
+	// JSHint to make sure code follows .jshintrc rules
+	function jshintCheck() {
+		return gulp.src([
+			'./app/**/*.js',
+			'./scripts/**/!(*.min).js'
+		])
+			.pipe(jshint('.jshintrc'))
+			.pipe(jshint.reporter(jshintStylish));
+	}
+	
     gulp.task('sass', scssToCSS);
     gulp.task('jsMin', jsUglifyAndMinify);
 	gulp.task('jsTestLocal', jsTestLocal);
 	gulp.task('jsTestCI', jsTestCI);
+	gulp.task('jshint', jshintCheck);
     
     gulp.task('dev', function () {
 		jsTestLocal();
         gulp.watch('./styles/scss/**/*.scss', ['sass']);
         gulp.watch(['./app/**/*.js', './app/.config.js'], ['jsMin']);
+		gulp.watch(['./app/**/*.js', './scripts/**/*.js'], ['jshint']);
     });
     
     gulp.task('default', ['dev']);

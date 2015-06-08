@@ -114,14 +114,20 @@
 	}
 	
     gulp.task('sass', scssToCSS);
+	gulp.task('sassWatch', function () {
+		gulp.task('./styles/scss/**/*.scss', ['sass']);
+	});
     gulp.task('jsMin', jsUglifyAndMinify);
+	gulp.task('jsMinWatch', function () {
+		gulp.watch(['./app/**/*.js', './app/.config.js'], ['jsMin']);
+	});
 	gulp.task('jsTestLocal', jsTestLocal);
 	gulp.task('jshint', jshintCheck);
-    gulp.task('dev', function () {
+	gulp.task('jshintWatch', function () {
+		gulp.watch(['./app/**/*.js', './scripts/**/!(*.min).js'], ['jshint']);
+	});
+    gulp.task('dev', ['sassWatch', 'jsMinWatch', 'jshintWatch'], function () {
 		jsTestLocal();
-        gulp.watch('./styles/scss/**/*.scss', ['sass']);
-        gulp.watch(['./app/**/*.js', './app/.config.js'], ['jsMin']);
-		gulp.watch(['./app/**/*.js', './scripts/**/*.js'], ['jshint']);
     });
 	gulp.task('fullCompile', ['sass', 'jsMin']);
 	

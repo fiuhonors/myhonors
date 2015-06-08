@@ -17,10 +17,8 @@
 	* @description Handles storage/persistence layer CRUD operations
 	*/
 	function StorageAccessService($q, $rootScope, StorageService) {
-
-		return {
-			$$storageRef: StorageService.getRef(),
-			$$listeners: [],
+		
+		var StorageAccessServiceApi = {
 			push: push,
 			set: set,
 			update: update,
@@ -29,6 +27,16 @@
 			delisten: delisten,
 			remove: remove
 		};
+		// Prevent changes and "hide" $$storageRef/$$listeners at iteration 
+		Object.defineProperty(StorageAccessServiceApi, '$$storageRef', {
+			value: StorageService.getRef()
+		});
+		Object.defineProperty(StorageAccessServiceApi, '$$listeners', {
+			value: [],
+			writable: true
+		});
+
+		return StorageAccessServiceApi;
 
 		/**
 		* @description Constructs the correct storage service reference given 

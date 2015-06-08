@@ -8,7 +8,15 @@
 	
 	describe('Storage Access Factory:', function () {
 		
-		var StorageAccess;
+		var StorageAccess,
+			$timeout;
+		
+		function flushAll() {
+			StorageAccess.$$storageRef.flush();
+			try {
+				$timeout.flush();
+			} catch (e) {}
+		}
 		
 		beforeEach(function () {
 			angular.mock.module('myhonorsApp.storage', function ($provide) {
@@ -18,14 +26,16 @@
 					}
 				});
 			});
-			angular.mock.inject(function (_StorageAccessService_) {
+			angular.mock.inject(function (_StorageAccessService_, _$timeout_) {
 				StorageAccess = _StorageAccessService_;
+				$timeout = _$timeout_;
 			});
 		});
 		
 		it('should have correct preliminary Firebase reference', function () {
 			expect(StorageAccess.$$storageRef).toBeTruthy();
-			expect(StorageAccess.$$storageRef).toEqual(jasmine.any(MockFirebase));
+			expect(StorageAccess.$$storageRef)
+				.toEqual(jasmine.any(MockFirebase));
 		});
 		
 		describe('Set method:', function () {
@@ -45,7 +55,7 @@
 				}, function () {
 					done.fail("Data not set at base reference.");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should store data at relative reference', function (done) {
@@ -60,7 +70,7 @@
 				}, function () {
 					done.fail("Data not set at relative reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should wipe out any previous data', function (done) {
@@ -73,7 +83,7 @@
 					storageRef = StorageAccess.$$storageRef;
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				StorageAccess.set(testModel).then(function () {
 					expect(storageRef.getData()).toEqual(testModel);
@@ -81,7 +91,7 @@
 				}, function () {
 					done.fail("Data not set");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 		});
@@ -100,7 +110,7 @@
 				}, function () {
 					done.fail("Data not set at base reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should store data at relative reference', function (done) {
@@ -115,10 +125,10 @@
 				}, function () {
 					done.fail("Data not set at relative reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
-			it('should update explicit properties of data only', function (done) {
+			it('should only update explicit data properties', function (done) {
 				var preliminaryData = {
 						preliminaryProp: "someOtherValue"
 					},
@@ -128,7 +138,7 @@
 					storageRef = StorageAccess.$$storageRef;
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				StorageAccess.update(testModel).then(function () {
 					var combinedData = {};
@@ -140,7 +150,7 @@
 				}, function () {
 					done.fail("Data not updated");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 		});
@@ -160,7 +170,7 @@
 				}, function () {
 					done.fail("Data not pushed at base reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should push data at relative reference', function (done) {
@@ -176,7 +186,7 @@
 				}, function () {
 					done.fail("Data not pushed at relative reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 		});
@@ -190,7 +200,7 @@
 					storageRef = StorageAccess.$$storageRef;
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				StorageAccess.get().then(function (data) {
 					expect(data).toEqual(storageRef.getData());
@@ -198,7 +208,7 @@
 				}, function () {
 					done.fail("Data not obtained at base reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should get data at relative reference', function (done) {
@@ -208,7 +218,7 @@
 					storageRef = StorageAccess.$$storageRef.child("childPath");
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				StorageAccess.get("childPath").then(function (data) {
 					expect(data).toEqual(storageRef.getData());
@@ -216,7 +226,7 @@
 				}, function () {
 					done.fail("Data not obtained at relative reference");
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 		});
@@ -234,7 +244,7 @@
 					fireCount = 0;
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				// Storage Access should be fired twice - 2 set operations
 				StorageAccess.listen(function (data) {
@@ -244,10 +254,10 @@
 						done();	
 					}
 				});
-				storageRef.flush();
+				flushAll();
 				
 				storageRef.set(secondaryData);
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should listen to data at relative reference', function (done) {
@@ -261,7 +271,7 @@
 					fireCount = 0;
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				// Storage Access should be fired twice - 2 set operations
 				StorageAccess.listen(function (data) {
@@ -272,10 +282,10 @@
 						done();	
 					}
 				}, "childPath");
-				storageRef.flush();
+				flushAll();
 				
 				storageRef.set(secondaryData);
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should throw if a non-function is given', function () {
@@ -312,22 +322,22 @@
 					storageRef = StorageAccess.$$storageRef,
 					fireCount = 0;
 				
-				var unwatch = StorageAccess.listen(function (data) {
+				var unwatch = StorageAccess.listen(function () {
 						fireCount++;
 					});
 				
-				storageRef.flush();
+				flushAll();
 				expect(fireCount).toEqual(1);
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				
 				expect(fireCount).toEqual(2);
 				
 				unwatch();
 				
-				storageRef.set(preliminaryData);
-				storageRef.flush();
+				storageRef.set(secondaryData);
+				flushAll();
 				
 				expect(fireCount).toEqual(2);
 			});
@@ -349,14 +359,14 @@
 				// This StorageAccess listener should be fired 2 times
 				// initial load + 1 set operation
 				// second set operation ignored because of delisten()
-				StorageAccess.listen(function (data) {
+				StorageAccess.listen(function () {
 					fireCount1++;
 					if (fireCount1 === 2) {
 						StorageAccess.delisten("childPath");
 						
 						// This should be ignored because of delisten()
 						storageRef.set(secondaryData);
-						storageRef.flush();
+						flushAll();
 						
 						expect(fireCount1).toEqual(2);
 					} else if (fireCount1 > 2) {
@@ -367,14 +377,14 @@
 				// This StorageAccess listener should be fired 3 times
 				// initial load + 2 set operations
 				// 4th set operation ignored because of delisten()
-				StorageAccess.listen(function (data) {
+				StorageAccess.listen(function () {
 					fireCount2++;
 					if (fireCount2 === 3) {
 						StorageAccess.delisten();
 						
 						// This should be ignored because of delisten()
 						storageRef.set(secondaryData);
-						storageRef.flush();
+						flushAll();
 						
 						expect(fireCount2).toEqual(3);
 						done();
@@ -382,7 +392,7 @@
 				});
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should throw if a non-function is given', function () {
@@ -420,14 +430,14 @@
 					storageRef = StorageAccess.$$storageRef;
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				expect(storageRef.getData()).toBeTruthy();
 				
 				StorageAccess.remove().then(function () {
 					expect(storageRef.getData()).toBeFalsy();
 					done();
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 			it('should remove data at relative reference', function (done) {
@@ -437,14 +447,14 @@
 					storageRef = StorageAccess.$$storageRef.child("childPath");
 				
 				storageRef.set(preliminaryData);
-				storageRef.flush();
+				flushAll();
 				expect(storageRef.getData()).toBeTruthy();
 				
 				StorageAccess.remove().then(function () {
 					expect(storageRef.getData()).toBeFalsy();
 					done();
 				});
-				storageRef.flush();
+				flushAll();
 			});
 			
 		});

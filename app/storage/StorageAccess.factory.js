@@ -2,11 +2,11 @@
 	'use strict';
 
 	var angular = window.angular;
-	
+
 	angular
 		.module('myhonorsApp.storage')
 		.factory('StorageAccessService', StorageAccessService);
-	
+
 	StorageAccessService.$inject = ['$q',
 									'$rootScope',
 									'StorageService'];
@@ -17,7 +17,7 @@
 	* @description Handles storage/persistence layer CRUD operations
 	*/
 	function StorageAccessService($q, $rootScope, StorageService) {
-		
+
 		return {
 			$$storageRef: StorageService.getRef(),
 			$$listeners: [],
@@ -29,7 +29,7 @@
 			delisten: delisten,
 			remove: remove
 		};
-		
+
 		/**
 		* @description Constructs the correct storage service reference given 
 		*	a path location in that storage.
@@ -47,11 +47,11 @@
 				constructedPathRef = constructedPathRef.child(relativePath);
 			} else {
 				constructedPathRef = StorageService
-										.getRef().child(relativePath);
+					.getRef().child(relativePath);
 			}
 			return constructedPathRef;
 		}
-		
+
 		/**
 		* @description Fires Angular's Digest Loop. This lets Angular know 
 		*	that our model layer has changed with fresh data.
@@ -62,14 +62,15 @@
 			var isValidDigestExp =
 				typeof digestExp === "function" ||
 				typeof digestExp === "string";
-			
+
 			if (digestExp && isValidDigestExp) {
-				$rootScope.$apply(digestExp);
+				return $rootScope.$evalAsync(digestExp);
 			} else {
-				$rootScope.$apply();
+				return $rootScope.$evalAsync(function () {
+				});
 			}
 		}
-		
+
 		/**
 		* @ngdoc method
 		* @name set
@@ -82,23 +83,22 @@
 		*/
 		function set(modelData, relPath) {
 			var relPathRef = _constructPathRef.call(this, relPath);
-			
+
 			function execute(resolve, reject) {
 				relPathRef
 					.set(modelData, function setComplete(error) {
 						if (error) {
-							reject(error);
+							_fireDigest(reject(error));
 						} else {
-							resolve();
+							_fireDigest(resolve());
 						}
-						_fireDigest();
 					});
 			}
 			
 			return $q(execute);
 		}
-		
-		/**
+
+			/**
 		* @ngdoc method
 		* @name update
 		* @methodOf myhonorsApp.storage.StorageAccessService
@@ -109,25 +109,25 @@
 		*	should be stored.
 		* @returns {Object} Promise
 		*/
-		function update(modelData, relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
-			
-			function execute(resolve, reject) {
-				relPathRef
-					.update(modelData, function updateComplete(error) {
+			function update(modelData, relPath) {
+				var relPathRef = _constructPathRef.call(this, relPath);
+					
+
+				function execute(resolve, reject) {
+					relPathRef
+						.update(modelData, function updateComplete(error) {
 						if (error) {
-							reject(error);
+							_fireDigest(reject(error));
 						} else {
-							resolve();
+							_fireDigest(resolve());
 						}
-						_fireDigest();
 					});
+				}
+
+				return $q(execute);
 			}
 
-			return $q(execute);
-		}
-		
-		/**
+			/**
 		* @ngdoc method
 		* @name push
 		* @methodOf myhonorsApp.storage.StorageAccessService
@@ -138,25 +138,24 @@
 		*	should be stored.
 		* @returns {Object} Promise
 		*/
-		function push(modelData, relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
-			
-			function execute(resolve, reject) {
-				relPathRef
-					.push(modelData, function pushComplete(error) {
+			function push(modelData, relPath) {
+				var relPathRef = _constructPathRef.call(this, relPath);
+
+				function execute(resolve, reject) {
+					relPathRef
+						.push(modelData, function pushComplete(error) {
 						if (error) {
-							reject(error);
+							_fireDigest(reject(error));
 						} else {
-							resolve();
+							_fireDigest(resolve());
 						}
-						_fireDigest();
 					});
+				}
+
+				return $q(execute);
 			}
-			
-			return $q(execute);
-		}
-		
-		/**
+
+			/**
 		* @ngdoc method
 		* @name getOnce
 		* @methodOf myhonorsApp.storage.StorageAccessService
@@ -166,24 +165,22 @@
 		*	should be obtained.
 		* @returns {Object} Promise
 		*/
-		function get(relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
-			
-			function execute(resolve, reject) {
-				relPathRef
-					.once('value', function getSuccess(firebaseSnapshot) {
-						resolve(firebaseSnapshot.val());
-						_fireDigest();
-					}, function getFailure(error) {
-						reject(error);
-						_fireDigest();
-					});
-			}
-			
-			return $q(execute);
-		}
+			function get(relPath) {
+				var relPathRef = _constructPathRef.call(this, relPath);
 
-		/**
+				function execute(resolve, reject) {
+					relPathRef
+						.once('value', function getSuccess(firebaseSnapshot) {
+						_fireDigest(resolve(firebaseSnapshot.val()));
+					}, function getFailure(error) {
+						_fireDigest(reject(error));
+					});
+				}
+
+				return $q(execute);
+			}
+
+			/**
 		* @ngdoc method
 		* @name listen
 		* @methodOf myhonorsApp.storage.StorageAccessService
@@ -200,38 +197,36 @@
 		* @returns {function} A specific delistener function for a specific 
 		*	generated listener.
 		*/
-		function listen(callback, relPath, persistence) {
-			if (typeof callback !== "function") {
-				throw new Error("Callback must be a function");	
+			function listen(callback, relPath, persistence) {
+				if (typeof callback !== "function") {
+					throw new Error("Callback must be a function");	
+				}
+
+				var $this = this,
+					relPathRef = _constructPathRef.call($this, relPath),
+					persist = persistence || false;
+
+				function getStreamSuccess(firebaseSnapshot) {
+					_fireDigest(callback(firebaseSnapshot.val()));
+				}
+				function getStreamFailure(error) {
+					_fireDigest(callback(error));
+				}
+				relPathRef
+					.on('value', getStreamSuccess, getStreamFailure);
+
+				if (!$this.hasOwnProperty("$$listeners")) {
+					$this.$$listeners = [];
+				}
+				$this.$$listeners.push([getStreamSuccess, relPath, persist]);
+
+				// Deregister listener for this specific instance
+				return function () {
+					$this.delisten(relPath, getStreamSuccess);
+				};
 			}
-			
-			var $this = this,
-				relPathRef = _constructPathRef.call($this, relPath),
-				persist = persistence || false;
-			
-			function getStreamSuccess(firebaseSnapshot) {
-				callback(firebaseSnapshot.val());
-				_fireDigest();
-			}
-			function getStreamFailure(error) {
-				callback(error);
-				_fireDigest();
-			}
-			relPathRef
-				.on('value', getStreamSuccess, getStreamFailure);
-			
-			if (!$this.hasOwnProperty("$$listeners")) {
-				$this.$$listeners = [];
-			}
-			$this.$$listeners.push([getStreamSuccess, relPath, persist]);
-			
-			// Deregister listener for this specific instance
-			return function () {
-				$this.delisten(relPath, getStreamSuccess);
-			};
-		}
-		
-		/**
+
+			/**
 		* @ngdoc method
 		* @name delisten
 		* @methodOf myhonorsApp.storage.StorageAccessService
@@ -243,35 +238,35 @@
 		* @param {function} listenerInstance Listener function used to listen to
 		*	changes that should be deregistered.
 		*/
-		function delisten(relPath, listenerInstance) {
-			var $this = this,
-				listenersRevised = [];
-			
-			if ($this.hasOwnProperty("$$listeners")) {
-				angular.forEach($this.$$listeners, function (listener) {
-					var listenerFunction = listener[0],
-						listenerRelPath = listener[1],
-						listenerPersist = listener[2],
-						relPathRef = _constructPathRef.call($this, relPath);
-					
-					if (listenerFunction === listenerInstance) {
-						relPathRef
-							.off('value', listenerInstance);
-					} else if (listenerRelPath === relPath && 
-							!listenerPersist && 
-							typeof listenerFunction === "function") {
-						relPathRef
-							.off('value', listenerFunction);
-					} else {
-						listenersRevised.push(listener);
-					}
-				});
-				
-				$this.$$listeners = listenersRevised;
-			}
-		}
+			function delisten(relPath, listenerInstance) {
+				var $this = this,
+					listenersRevised = [];
 
-		/**
+				if ($this.hasOwnProperty("$$listeners")) {
+					angular.forEach($this.$$listeners, function (listener) {
+						var listenerFunction = listener[0],
+							listenerRelPath = listener[1],
+							listenerPersist = listener[2],
+							relPathRef = _constructPathRef.call($this, relPath);
+
+						if (listenerFunction === listenerInstance) {
+							relPathRef
+								.off('value', listenerInstance);
+						} else if (listenerRelPath === relPath && 
+								   !listenerPersist && 
+								   typeof listenerFunction === "function") {
+							relPathRef
+								.off('value', listenerFunction);
+						} else {
+							listenersRevised.push(listener);
+						}
+					});
+
+					$this.$$listeners = listenersRevised;
+				}
+			}
+
+			/**
 		* @ngdoc method
 		* @name remove
 		* @methodOf myhonorsApp.storage.StorageAccessService
@@ -281,24 +276,23 @@
 		*	data should be stored.
 		* @returns {Object} Promise
 		*/
-		function remove(relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
-			
-			function execute(resolve, reject) {
-				relPathRef
-					.remove(function removeComplete(error) {
+			function remove(relPath) {
+				var relPathRef = _constructPathRef.call(this, relPath);
+
+				function execute(resolve, reject) {
+					relPathRef
+						.remove(function removeComplete(error) {
 						if (error) {
-							reject(error);
+							_fireDigest(reject(error));
 						} else {
-							resolve();
+							_fireDigest(resolve());
 						}
-						_fireDigest();
 					});
+				}
+
+				return $q(execute);
 			}
 
-			return $q(execute);
 		}
 
-	}
-
-}(window));
+	}(window));

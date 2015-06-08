@@ -1,8 +1,13 @@
 (function (window) {
 	'use strict';
 	
-	var angular = window.angular,
-		app = angular.module('myhonorsApp.clubs');
+	var angular = window.angular;
+	
+	angular
+		.module('myhonorsApp.clubs')
+		.config(config);
+	
+	config.$inject = ['$stateProvider'];
 	
 	function config($stateProvider) {
 		
@@ -24,8 +29,5 @@
 			});
 		
 	}
-	config.$inject = ['$stateProvider'];
-	
-	app.config(config);
 	
 }(window));

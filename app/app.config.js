@@ -1,10 +1,17 @@
 (function (window) {
 	'use strict';
 	
-	var angular = window.angular,
-		app = angular.module('myhonorsApp');
+	var angular = window.angular;
 	
-	function config($stateProvider, $compileProvider) {
+	angular
+		.module('myhonorsApp')
+		.config(config);
+	
+	config.$inject = ['$stateProvider',
+					  '$compileProvider', 
+					  '$httpProvider'];
+	
+	function config($stateProvider, $compileProvider, $httpProvider) {
 		
 		$stateProvider
 			.state('app', {
@@ -17,10 +24,8 @@
 		// Turn off at production!
 		$compileProvider.debugInfoEnabled(true);
 		
+		$httpProvider.useApplyAsync(true);
+		
 	}
-	config.$inject = ['$stateProvider',
-					  '$compileProvider'];
-	
-	app.config(config);
 	
 }(window));

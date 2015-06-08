@@ -1,8 +1,13 @@
 (function (window) {
 	'use strict';
 	
-	var angular = window.angular,
-		app = angular.module('myhonorsApp.careers');
+	var angular = window.angular;
+	
+	angular
+		.module('myhonorsApp.careers')
+		.config(config);
+	
+	config.$inject = ['$stateProvider'];
 	
 	function config($stateProvider) {
 		
@@ -30,8 +35,5 @@
 			
 		
 	}
-	config.$inject = ['$stateProvider'];
-	
-	app.config(config);
 	
 }(window));

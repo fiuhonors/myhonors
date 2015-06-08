@@ -80,27 +80,6 @@
 		});
 	}
 	
-	// Test Javascript files in CI - upload coverage of tests to Coveralls
-	function jsTestCI() {
-		karma.start({
-			configFile: __dirname + '/tests/karma.conf.js',
-			singleRun: true,
-			browsers: ['PhantomJS'],
-			reporters: ['progress', 'coverage', 'coveralls'],
-			preprocessors: {
-				'**/*.js': ['coverage']
-			},
-			coverageReporter: {
-				type: 'lcov',
-				dir: 'tests/coverage/'
-			}
-		}, function (exitCode) {
-			rimraf('./tests/coverage', function () {
-				process.exit(exitCode);
-			});
-		});
-	}
-	
 	// JSHint to make sure code follows .jshintrc rules
 	function jshintCheck() {
 		return gulp.src([
@@ -111,20 +90,42 @@
 			.pipe(jshint.reporter(jshintStylish));
 	}
 	
+	// Continous Integration
+	function jsTestCi() {
+		var karmaConfig = {
+			configFile: __dirname + '/tests/karma.conf.js',
+			singleRun: true,
+			browsers: ['PhantomJS'],
+			reporters: ['progress', 'coverage', 'coveralls'],
+			preprocessors: {
+				'scripts/**/*.js': ['coverage']
+			},
+			coverageReporter: {
+				type: 'lcov',
+				dir: 'tests/coverage/'
+			}
+		};
+		
+		karma.start(karmaConfig, function (exitCode) {
+			rimraf('./tests/coverage', function () {
+				process.exit(exitCode);
+			});
+		});
+	}
+	
     gulp.task('sass', scssToCSS);
     gulp.task('jsMin', jsUglifyAndMinify);
 	gulp.task('jsTestLocal', jsTestLocal);
-	gulp.task('jsTestCI', jsTestCI);
 	gulp.task('jshint', jshintCheck);
-    
     gulp.task('dev', function () {
 		jsTestLocal();
         gulp.watch('./styles/scss/**/*.scss', ['sass']);
         gulp.watch(['./app/**/*.js', './app/.config.js'], ['jsMin']);
 		gulp.watch(['./app/**/*.js', './scripts/**/*.js'], ['jshint']);
     });
-    
+	gulp.task('fullCompile', ['sass', 'jsMin']);
+	
+	gulp.task('ci', ['fullCompile'], jsTestCi);
     gulp.task('default', ['dev']);
-    gulp.task('ci', ['jsTestCI']);
 	
 }());

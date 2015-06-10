@@ -2,7 +2,7 @@
 
 module.exports = function (config) {
 	'use strict';
-	
+
 	config.set({
 		basePath: '../',
 		frameworks: ['jasmine'],
@@ -26,7 +26,10 @@ module.exports = function (config) {
 			'tests/unit/**/helpers.spec.js',
 			'tests/unit/**/!(helpers).spec.js'
 		],
-		reporters: ['progress']
+		reporters: ['progress', 'coverage', 'coveralls'],
+		preprocessors: {
+			'!(bower_components|node_modules|tests)/**/*.js': ['coverage']
+		},
 	});
 
 };

@@ -63,10 +63,26 @@
             .pipe(gulp.dest('./scripts/'));
     }
 	
+	// JSHint to make sure code follows .jshintrc rules
+	function jshintCheck() {
+		console.log('<------------- Js Hint ---------------------->');
+		
+		return gulp.src([
+			'./app/**/*.js',
+			'./scripts/**/!(*.min).js'
+		])
+			.pipe(jshint('.jshintrc'))
+			.pipe(jshint.reporter(jshintStylish));
+	}
+	
 	// Test Javascript files locally
 	function jsTestLocal(callback) {
 		var karmaConfig = {
-				configFile: __dirname + '/tests/karma.conf.js'
+				configFile: __dirname + '/tests/karma.conf.js',
+				coverageReporter: {
+					type: 'html',
+					dir: 'tests/coverage/'
+				}
 			};
 		if (!yargv.full && !yargv.f) {
 			karmaConfig.exclude = ['tests/unit/**/*.module.spec.js', 
@@ -81,28 +97,12 @@
 		});
 	}
 	
-	// JSHint to make sure code follows .jshintrc rules
-	function jshintCheck() {
-		console.log('<------------- Js Hint ---------------------->');
-		
-		return gulp.src([
-			'./app/**/*.js',
-			'./scripts/**/!(*.min).js'
-		])
-			.pipe(jshint('.jshintrc'))
-			.pipe(jshint.reporter(jshintStylish));
-	}
-	
 	// Continous Integration
 	function jsTestCi() {
 		var karmaConfig = {
 			configFile: __dirname + '/tests/karma.conf.js',
 			singleRun: true,
 			browsers: ['PhantomJS'],
-			reporters: ['progress', 'coverage', 'coveralls'],
-			preprocessors: {
-				'scripts/**/*.js': ['coverage']
-			},
 			coverageReporter: {
 				type: 'lcov',
 				dir: 'tests/coverage/'
@@ -110,9 +110,7 @@
 		};
 		
 		karma.start(karmaConfig, function (exitCode) {
-			rimraf('./tests/coverage', function () {
-				process.exit(exitCode);
-			});
+			process.exit(exitCode);
 		});
 	}
 	

@@ -163,9 +163,10 @@
 					},
 					storageRef = RootStorage.$$storageRef;
 				
-				RootStorage.push(testModel).then(function () {
+				RootStorage.push(testModel).then(function (pushKey) {
 					expect(storageRef.getData()).not.toEqual(testModel);
 					expect(storageRef.getData()).toBeNonEmptyObject();
+					expect(pushKey).toBeTruthy();
 					done();
 				}, function () {
 					done.fail("Data not pushed at base reference");

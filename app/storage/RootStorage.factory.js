@@ -147,17 +147,19 @@
 		* @returns {Object} Promise
 		*/
 		function push(modelData, relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
+			var relPathRef = _constructPathRef.call(this, relPath),
+				pushId;
 
 			function execute(resolve, reject) {
-				relPathRef
-					.push(modelData, function pushComplete(error) {
-					if (error) {
-						_fireDigest(reject(error));
-					} else {
-						_fireDigest(resolve());
-					}
-				});
+				var pushRef = 
+					relPathRef
+						.push(modelData, function pushComplete(error) {
+						if (error) {
+							_fireDigest(reject(error));
+						} else {
+							_fireDigest(resolve(pushRef.key()));
+						}
+					});
 			}
 
 			return $q(execute);

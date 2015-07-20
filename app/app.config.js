@@ -1,15 +1,14 @@
 (function (window) {
 	'use strict';
 	
-	var angular = window.angular;
+	var angular = window.angular,
+		SETTINGS = window.SETTINGS;
 	
 	angular
 		.module('myhonorsApp')
 		.config(config);
 	
-	config.$inject = ['$stateProvider',
-					  '$compileProvider', 
-					  '$httpProvider'];
+	config.$inject = ['$stateProvider', '$compileProvider', '$httpProvider'];
 	
 	function config($stateProvider, $compileProvider, $httpProvider) {
 		
@@ -22,9 +21,11 @@
 			});
 		
 		// Turn off at production!
-		$compileProvider.debugInfoEnabled(true);
+		$compileProvider
+			.debugInfoEnabled(SETTINGS.COMPILE_PROVIDER.DEBUG_INFO_ENABLED);
 		
-		$httpProvider.useApplyAsync(true);
+		$httpProvider
+			.useApplyAsync(SETTINGS.HTTP_PROVIDER.USE_APPLY_ASYNC);
 		
 	}
 	

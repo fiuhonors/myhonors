@@ -56,9 +56,10 @@
 			'./app/**/!(*.module|*.config|*.run|.config).js'
 		])
 			.pipe(plumber(plumberSettings))
+			.pipe(sourcemaps.init())
             .pipe(concat('app.min.js'))
-            .pipe(gulp.dest('./scripts/'))
             .pipe(uglify())
+			.pipe(sourcemaps.write())
 			.pipe(plumber.stop())
             .pipe(gulp.dest('./scripts/'));
     }

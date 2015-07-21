@@ -1,8 +1,8 @@
 (function (window) {
-	'use strict';
-	
-	var angular = window.angular;
-	
-	angular.module('myhonorsApp.storage', []);
-	
+    'use strict';
+
+    var angular = window.angular;
+
+    angular.module('myhonorsApp.storage', []);
+
 }(window));

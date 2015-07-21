@@ -1,28 +1,28 @@
 (function (window) {
-	'use strict';
-	
-	var angular = window.angular;
-	
-	angular
-		.module('myhonorsApp.storage')
-		.factory('StorageUtilityService', StorageUtilityService);
-	
-	StorageUtilityService.$inject = ['$rootScope', 
-									 'StorageReferenceService'];
-	
-	/**
+    'use strict';
+
+    var angular = window.angular;
+
+    angular
+        .module('myhonorsApp.storage')
+        .factory('StorageUtilityService', StorageUtilityService);
+
+    StorageUtilityService.$inject = ['$rootScope', 
+                                     'StorageReferenceService'];
+
+    /**
 	* @ngdoc service
 	* @name myhonorsApp.storage.service:StorageUtilityService
 	* @description Utility functions for storage/persistence layer
 	*/
-	function StorageUtilityService($rootScope, StorageReferenceService) {
-		
-		return {
-			constructPathRef: constructPathRef,
-			fireDigest: fireDigest
-		};
-		
-		/**
+    function StorageUtilityService($rootScope, StorageReferenceService) {
+
+        return {
+            constructPathRef: constructPathRef,
+            fireDigest: fireDigest
+        };
+
+        /**
 		* @ngdoc method
 		* @name constructPath
 		* @methodOf myhonorsApp.storage.StorageUtilityService
@@ -40,21 +40,21 @@
 		*	provided base reference and relative location to that base
 		*	reference.
 		*/
-		function constructPathRef(relativePath, context) {
-			var constructedPathRef = context.$$storageRef;
-			if (!relativePath || !angular.isString(relativePath)) {
-				return constructedPathRef;
-			}
-			if (constructedPathRef) {
-				constructedPathRef = constructedPathRef.child(relativePath);
-			} else {
-				constructedPathRef = StorageReferenceService
-					.getRef().child(relativePath);
-			}
-			return constructedPathRef;
-		}
+        function constructPathRef(relativePath, context) {
+            var constructedPathRef = context.$$storageRef;
+            if (!relativePath || !angular.isString(relativePath)) {
+                return constructedPathRef;
+            }
+            if (constructedPathRef) {
+                constructedPathRef = constructedPathRef.child(relativePath);
+            } else {
+                constructedPathRef = StorageReferenceService
+                    .getRef().child(relativePath);
+            }
+            return constructedPathRef;
+        }
 
-		/**
+        /**
 		* @ngdoc method
 		* @name fireDigest
 		* @methodOf myhonorsApp.storage.StorageUtilityService
@@ -68,18 +68,18 @@
 		* @returns {*} Result of evaluating the expression in the "Angular
 		*	world".
 		*/
-		function fireDigest(digestExp) {
-			var isValidDigestExp =
-				typeof digestExp === "function" ||
-				typeof digestExp === "string";
+        function fireDigest(digestExp) {
+            var isValidDigestExp =
+                typeof digestExp === "function" ||
+                typeof digestExp === "string";
 
-			if (digestExp && isValidDigestExp) {
-				return $rootScope.$evalAsync(digestExp);
-			} else {
-				return $rootScope.$evalAsync(function () {
-				});
-			}
-		}
-	}
-	
+            if (digestExp && isValidDigestExp) {
+                return $rootScope.$evalAsync(digestExp);
+            } else {
+                return $rootScope.$evalAsync(function () {
+                });
+            }
+        }
+    }
+
 }(window));

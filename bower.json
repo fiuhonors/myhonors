@@ -1,46 +1,46 @@
 {
-  "name": "MyHonors",
-  "version": "1.0.0",
-  "homepage": "https://github.com/fiuhonors/myhonors",
-  "authors": [
-    "Alastair Paragas <alastairparagas@gmail.com>",
-    "Alberto Mizrahi <amb110395@gmail.com>"
-  ],
-  "description": "MyHonors is the premiere online portal for FIU Honors College students, staff, clubs and professors.",
-  "main": "index.html",
-  "moduleType": [
-    "globals"
-  ],
-  "keywords": [
-    "honors",
-    "fiu",
-    "myhonors"
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "firebase": "~2.2.7",
-    "angular": "~1.4.3",
-    "bootstrap-sass": "~3.3.5",
-    "jquery": "~2.1.4",
-    "angular-ui-router": "~0.2.15",
-    "lodash": "~3.10.0"
-  },
-  "devDependencies": {
-    "angular-mocks": "~1.4.3",
-    "mockfirebase": "~0.11.0"
-  },
-  "resolutions": {
-    "angular": "~1.4.3",
-    "firebase": "~2.2.7",
-    "bootstrap-sass": "~3.3.5",
-    "angular-ui-router": "~0.2.15",
-    "angular-mocks": "~1.4.3"
-  }
+    "name": "MyHonors",
+    "version": "1.0.0",
+    "homepage": "https://github.com/fiuhonors/myhonors",
+    "authors": [
+        "Alastair Paragas <alastairparagas@gmail.com>",
+        "Alberto Mizrahi <amb110395@gmail.com>"
+    ],
+    "description": "MyHonors is the premiere online portal for FIU Honors College students, staff, clubs and professors.",
+    "main": "index.html",
+    "moduleType": [
+        "globals"
+    ],
+    "keywords": [
+        "honors",
+        "fiu",
+        "myhonors"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "firebase": "~2.2.7",
+        "angular": "~1.4.3",
+        "bootstrap-sass": "~3.3.5",
+        "jquery": "~2.1.4",
+        "angular-ui-router": "~0.2.15",
+        "lodash": "~3.10.0"
+    },
+    "devDependencies": {
+        "angular-mocks": "~1.4.3",
+        "mockfirebase": "~0.11.0"
+    },
+    "resolutions": {
+        "angular": "~1.4.3",
+        "firebase": "~2.2.7",
+        "bootstrap-sass": "~3.3.5",
+        "angular-ui-router": "~0.2.15",
+        "angular-mocks": "~1.4.3"
+    }
 }

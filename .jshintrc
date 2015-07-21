@@ -2,13 +2,13 @@
 //	https://github.com/jshint/jshint/blob/master/examples/.jshintrc
 
 {
-	"camelcase": true,
-	"freeze": true,
-	"validthis": true,
-	"maxlen": 80,
-	"newcap": true,
-	
-	"browser": true,
-	"jasmine": true,
-	"worker": true
+    "camelcase": true,
+    "freeze": true,
+    "validthis": true,
+    "maxlen": 80,
+    "newcap": true,
+
+    "browser": true,
+    "jasmine": true,
+    "worker": true
 }

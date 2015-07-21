@@ -1,8 +1,8 @@
 (function (window) {
-	'use strict';
-	
-	var angular = window.angular;
-	
-	angular.module('myhonorsApp.citizenships', ['ui.router']);
-	
+    'use strict';
+
+    var angular = window.angular;
+
+    angular.module('myhonorsApp.citizenships', ['ui.router']);
+
 }(window));

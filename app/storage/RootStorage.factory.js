@@ -8,7 +8,7 @@
 		.factory('RootStorageService', RootStorageService);
 
 	RootStorageService.$inject = ['$q',
-								  '$rootScope',
+								  'StorageUtilityService',
 								  'StorageReferenceService'];
 
 	/**
@@ -16,7 +16,9 @@
 	* @name myhonorsApp.storage.service:RootStorageService
 	* @description Handles storage/persistence layer CRUD operations
 	*/
-	function RootStorageService($q, $rootScope, StorageReferenceService) {
+	function RootStorageService($q, 
+								 StorageUtilityService, 
+								 StorageReferenceService) {
 
 		var RootStorageServiceApi = {
 			push: push,
@@ -40,47 +42,6 @@
 		return RootStorageServiceApi;
 
 		/**
-		* @description Constructs the correct StorageReference service 
-		*	reference given a path location in that storage.
-		* @param {string} relativePath Location in the storage/database 
-		*	relative to the base reference (either $$storageRef property 
-		*	of RootStorageService, if set, or 
-		*	StorageReferenceService.getRef(), if $$storageRef is not set).
-		*/
-		function _constructPathRef(relativePath) {
-			var constructedPathRef = this.$$storageRef;
-			if (!relativePath || !angular.isString(relativePath)) {
-				return constructedPathRef;
-			}
-			if (constructedPathRef) {
-				constructedPathRef = constructedPathRef.child(relativePath);
-			} else {
-				constructedPathRef = StorageReferenceService
-					.getRef().child(relativePath);
-			}
-			return constructedPathRef;
-		}
-
-		/**
-		* @description Fires Angular's Digest Loop. This lets Angular know 
-		*	that our model layer has changed with fresh data.
-		* @param {(function|string)} digestExp Function or String to evaluate
-		*	during the digest loop.
-		*/
-		function _fireDigest(digestExp) {
-			var isValidDigestExp =
-				typeof digestExp === "function" ||
-				typeof digestExp === "string";
-
-			if (digestExp && isValidDigestExp) {
-				return $rootScope.$evalAsync(digestExp);
-			} else {
-				return $rootScope.$evalAsync(function () {
-				});
-			}
-		}
-
-		/**
 		* @ngdoc method
 		* @name set
 		* @methodOf myhonorsApp.storage.RootStorageService
@@ -89,17 +50,19 @@
 		* @param {*} modelData Data to store
 		* @param {string} relPath Location relative to $$storageRef where data 
 		*	should be stored.
+		* @returns {Object} Promise
 		*/
 		function set(modelData, relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
+			var relPathRef = 
+				StorageUtilityService.constructPathRef(relPath, this);
 
 			function execute(resolve, reject) {
 				relPathRef
 					.set(modelData, function setComplete(error) {
 					if (error) {
-						_fireDigest(reject(error));
+						StorageUtilityService.fireDigest(reject(error));
 					} else {
-						_fireDigest(resolve());
+						StorageUtilityService.fireDigest(resolve());
 					}
 				});
 			}
@@ -119,22 +82,23 @@
 		* @returns {Object} Promise
 		*/
 		function update(modelData, relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
-			
+			var relPathRef = 
+				StorageUtilityService.constructPathRef(relPath, this);
+
 			function execute(resolve, reject) {
 				relPathRef
 					.update(modelData, function updateComplete(error) {
 					if (error) {
-						_fireDigest(reject(error));
+						StorageUtilityService.fireDigest(reject(error));
 					} else {
-						_fireDigest(resolve());
+						StorageUtilityService.fireDigest(resolve());
 					}
 				});
 			}
 
 			return $q(execute);
 		}
-		
+
 		/**
 		* @ngdoc method
 		* @name push
@@ -147,19 +111,21 @@
 		* @returns {Object} Promise
 		*/
 		function push(modelData, relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath),
+			var relPathRef = 
+				StorageUtilityService.constructPathRef(relPath, this),
 				pushId;
 
 			function execute(resolve, reject) {
 				var pushRef = 
 					relPathRef
 						.push(modelData, function pushComplete(error) {
-						if (error) {
-							_fireDigest(reject(error));
-						} else {
-							_fireDigest(resolve(pushRef.key()));
-						}
-					});
+					if (error) {
+						StorageUtilityService.fireDigest(reject(error));
+					} else {
+						StorageUtilityService
+							.fireDigest(resolve(pushRef.key()));
+					}
+				});
 			}
 
 			return $q(execute);
@@ -176,14 +142,17 @@
 		* @returns {Object} Promise
 		*/
 		function get(relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
+			var relPathRef = 
+				StorageUtilityService.constructPathRef(relPath, this);
 
 			function execute(resolve, reject) {
 				relPathRef
 					.once('value', function getSuccess(firebaseSnapshot) {
-					_fireDigest(resolve(firebaseSnapshot.val()));
+					StorageUtilityService
+						.fireDigest(resolve(firebaseSnapshot.val()));
 				}, function getFailure(error) {
-					_fireDigest(reject(error));
+					StorageUtilityService
+						.fireDigest(reject(error));
 				});
 			}
 
@@ -203,7 +172,7 @@
 		* @param {string} relPath Location relative to $$storageRef where data 
 		*	should be obtained.
 		* @param {boolean} persistence Whether this listener should persist 
-		*	for the lifetime of the app or not
+		*	for the lifetime of the app or not. Defaults to false.
 		* @returns {function} A specific delistener function for a specific 
 		*	generated listener.
 		*/
@@ -213,14 +182,17 @@
 			}
 
 			var $this = this,
-				relPathRef = _constructPathRef.call($this, relPath),
+				relPathRef = 
+					StorageUtilityService
+						.constructPathRef(relPath, $this),
 				persist = persistence || false;
 
 			function getStreamSuccess(firebaseSnapshot) {
-				_fireDigest(callback(firebaseSnapshot.val()));
+				StorageUtilityService
+					.fireDigest(callback(firebaseSnapshot.val()));
 			}
 			function getStreamFailure(error) {
-				_fireDigest(callback(error));
+				StorageUtilityService.fireDigest(callback(error));
 			}
 			relPathRef
 				.on('value', getStreamSuccess, getStreamFailure);
@@ -228,7 +200,7 @@
 			if (!$this.hasOwnProperty("$$listeners")) {
 				$this.$$listeners = [];
 			}
-			
+
 			$this.$$listeners.push([getStreamSuccess, relPath, persist]);
 
 			// Deregister listener for this specific instance
@@ -258,7 +230,8 @@
 					var listenerFunction = listener[0],
 						listenerRelPath = listener[1],
 						listenerPersist = listener[2],
-						relPathRef = _constructPathRef.call($this, relPath);
+						relPathRef = 
+						StorageUtilityService.constructPathRef(relPath, $this);
 
 					if (listenerFunction === listenerInstance) {
 						relPathRef
@@ -288,15 +261,16 @@
 		* @returns {Object} Promise
 		*/
 		function remove(relPath) {
-			var relPathRef = _constructPathRef.call(this, relPath);
+			var relPathRef = 
+				StorageUtilityService.constructPathRef(relPath, this);
 
 			function execute(resolve, reject) {
 				relPathRef
 					.remove(function removeComplete(error) {
 					if (error) {
-						_fireDigest(reject(error));
+						StorageUtilityService.fireDigest(reject(error));
 					} else {
-						_fireDigest(resolve());
+						StorageUtilityService.fireDigest(resolve());
 					}
 				});
 			}

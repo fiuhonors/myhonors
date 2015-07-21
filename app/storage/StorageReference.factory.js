@@ -30,6 +30,9 @@
 		*	database/storage service of the app.
 		*/
 		function getRef(absolutePath) {
+			if (!Firebase) {
+				throw new Error("Firebase library is required.");
+			}
 			if (absolutePath) {
 				return new Firebase(absolutePath);
 			}
